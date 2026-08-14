@@ -59,9 +59,7 @@ function Stripe() {
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, background: colors.accentSoft, border: `1px solid ${colors.border}` }}>
-        <Scissors size={18} color={colors.accent} />
-      </div>
+      <img src="/logo.png" alt="Barber Shop Caleb" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: `1px solid ${colors.border}` }} />
       <div>
         <div className="text-lg tracking-wide" style={{ color: colors.text, fontWeight: 600, letterSpacing: "0.02em" }}>BARBER SHOP CALEB</div>
                 <div className="text-[10px] uppercase" style={{ color: colors.muted, letterSpacing: "0.15em" }}> 📍 Coronado, Osa, Puntarenas</div>
