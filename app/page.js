@@ -175,7 +175,7 @@ function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onC
     const result = await onCreateBooking({ service, date, time, name, phone, eyebrows });
     setSubmitting(false);
     if (result.error) {
-      setError("Ese horario ya se ocupó, elige otra hora.");
+      setError(result.error.message || "Ese horario ya se ocupó, elige otra hora.");
       setStep(3);
       return;
     }
