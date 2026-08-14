@@ -79,8 +79,8 @@ function StepLabel({ n, label }) {
   );
 }
 
-function Calendar({ selected, onSelect, blockedDays }) {
-  const [viewDate, setViewDate] = useState(new Date());
+function Calendar({ selected, onSelect, blockedDays, restrictPast = true }) {
+  const [viewDate, setViewDate] = useState(selected ? new Date(...selected.split("-").map((n, i) => i === 1 ? Number(n) - 1 : Number(n))) : new Date());
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const grid = useMemo(() => {
@@ -92,14 +92,25 @@ function Calendar({ selected, onSelect, blockedDays }) {
     for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
     return cells;
   }, [year, month]);
+  const yearOptions = [];
+  for (let y = new Date().getFullYear() - 1; y <= new Date().getFullYear() + 5; y++) yearOptions.push(y);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-2">
         <button onClick={() => setViewDate(new Date(year, month - 1, 1))} className="p-2 rounded-lg" style={{ background: colors.panelLight, border: `1px solid ${colors.border}` }}>
           <ChevronLeft size={16} color={colors.text} />
         </button>
-        <div style={{ color: colors.text, fontWeight: 600, letterSpacing: "0.03em" }}>{MONTHS_ES[month]} {year}</div>
+        {restrictPast ? (
+          <div style={{ color: colors.text, fontWeight: 600, letterSpacing: "0.03em" }}>{MONTHS_ES[month]} {year}</div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div style={{ color: colors.text, fontWeight: 600, letterSpacing: "0.03em" }}>{MONTHS_ES[month]}</div>
+            <select value={year} onChange={(e) => setViewDate(new Date(Number(e.target.value), month, 1))} className="text-sm rounded-lg px-2 py-1" style={{ background: colors.panelLight, border: `1px solid ${colors.border}`, color: colors.text }}>
+              {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+        )}
         <button onClick={() => setViewDate(new Date(year, month + 1, 1))} className="p-2 rounded-lg" style={{ background: colors.panelLight, border: `1px solid ${colors.border}` }}>
           <ChevronRight size={16} color={colors.text} />
         </button>
@@ -111,9 +122,9 @@ function Calendar({ selected, onSelect, blockedDays }) {
         {grid.map((d, i) => {
           if (!d) return <div key={i} />;
           const key = dateKey(d);
-          const isSunday = d.getDay() === 0;
-          const past = isPastDate(d);
-          const blocked = blockedDays.includes(key);
+          const isSunday = restrictPast && d.getDay() === 0;
+          const past = restrictPast && isPastDate(d);
+          const blocked = restrictPast && blockedDays.includes(key);
           const disabled = isSunday || past || blocked;
           const isSelected = selected === key;
           return (
@@ -127,7 +138,6 @@ function Calendar({ selected, onSelect, blockedDays }) {
     </div>
   );
 }
-
 function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onCancelBooking, onGoAdmin, heroImg }) {
   const [step, setStep] = useState(1);
   const [service, setService] = useState(null);
