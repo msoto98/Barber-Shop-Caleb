@@ -350,7 +350,8 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
   const [tab, setTab] = useState("citas");
-  const [manageDate, setManageDate] = useState(dateKey(new Date()));
+    const [manageDate, setManageDate] = useState(dateKey(new Date()));
+  const [citasDate, setCitasDate] = useState(dateKey(new Date()));
   const [extraAmount, setExtraAmount] = useState("");
   const [extraNote, setExtraNote] = useState("");
 
@@ -401,16 +402,21 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
           <button key={k} onClick={() => setTab(k)} className="py-2 rounded-lg text-xs" style={{ background: tab === k ? colors.accent : "transparent", color: tab === k ? "#fff" : colors.muted, border: `1px solid ${tab === k ? colors.accent : colors.border}`, fontWeight: 600 }}>{label}</button>
         ))}
       </div>
-
       {tab === "citas" && (
         <div className="space-y-3">
-          {active.length === 0 && <Card><div className="text-center py-4" style={{ color: colors.muted }}>Sin citas activas.</div></Card>}
-          {active.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).map((a) => (
+          <Card>
+            <Calendar selected={citasDate} onSelect={setCitasDate} blockedDays={[]} restrictPast={false} />
+          </Card>
+          <div className="text-xs uppercase mt-2 mb-1 px-1" style={{ color: colors.muted, letterSpacing: "0.1em" }}>
+            Citas del {citasDate}
+          </div>
+          {active.filter((a) => a.date === citasDate).length === 0 && <Card><div className="text-center py-4" style={{ color: colors.muted }}>Sin citas ese día.</div></Card>}
+          {active.filter((a) => a.date === citasDate).sort((a, b) => a.time - b.time).map((a) => (
             <Card key={a.id}>
               <div className="flex justify-between items-start">
                 <div>
                   <div style={{ color: colors.text, fontWeight: 600 }}>{a.name}</div>
-                  <div className="text-xs" style={{ color: colors.muted }}>{a.serviceName} · {a.date} · {formatHour(a.time)}</div>
+                  <div className="text-xs" style={{ color: colors.muted }}>{a.serviceName} · {formatHour(a.time)}</div>
                   <div className="text-xs flex items-center gap-1 mt-1" style={{ color: colors.muted }}><Phone size={10} /> {a.phone}</div>
                 </div>
                 <div className="flex flex-col gap-1.5 items-end">
