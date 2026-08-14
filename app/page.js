@@ -261,6 +261,11 @@ function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onC
               </div>
             </Card>
           )}
+          {step === 1 && (
+            <div className="text-xs text-center mt-4 px-2" style={{ color: colors.muted }}>
+              ✂️ ¿Llegaste sin cita? Con mucho gusto te atendemos — solo debes esperar a que se libere un espacio en la agenda.
+            </div>
+          )}
 
           {step === 2 && (
             <Card>
