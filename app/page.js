@@ -64,7 +64,7 @@ function Logo() {
       </div>
       <div>
         <div className="text-lg tracking-wide" style={{ color: colors.text, fontWeight: 600, letterSpacing: "0.02em" }}>BARBER SHOP CALEB</div>
-                <div className="text-[10px] uppercase" style={{ color: colors.muted, letterSpacing: "0.15em" }}>Reservas · 📍 Coronado, Osa, Puntarenas</div>
+                <div className="text-[10px] uppercase" style={{ color: colors.muted, letterSpacing: "0.15em" }}> 📍 Coronado, Osa, Puntarenas</div>
       </div>
     </div>
   );
