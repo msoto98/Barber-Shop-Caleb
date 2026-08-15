@@ -356,7 +356,23 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
   const [extraNote, setExtraNote] = useState("");
 
   const active = bookings.filter((a) => a.status !== "cancelada");
+function handleToggleDay() {
+    const isBlocking = !blockedDays.includes(manageDate);
+    if (isBlocking) {
+      const count = active.filter((a) => a.date === manageDate).length;
+      if (count > 0 && !window.confirm(`Hay ${count} cita(s) agendada(s) ese día. ¿Bloquear igual? (las citas existentes no se cancelan)`)) return;
+    }
+    onToggleDay(manageDate);
+  }
 
+  function handleToggleHour(h) {
+    const isBlocking = !(blockedHours[manageDate] || []).includes(h);
+    if (isBlocking) {
+      const conflict = active.find((a) => a.date === manageDate && a.time === h);
+      if (conflict && !window.confirm(`Ya hay una cita a las ${formatHour(h)} (${conflict.name}). ¿Bloquear igual? (la cita existente no se cancela)`)) return;
+    }
+    onToggleHour(manageDate, h);
+  }
   const revenue = useMemo(() => {
     const todayKey = crTodayKey();
     const happened = active.filter((a) => a.date <= todayKey);
@@ -456,7 +472,7 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
           <input type="date" value={manageDate} onChange={(e) => setManageDate(e.target.value)} className="w-full p-3 rounded-lg text-sm mb-4" style={{ background: colors.panelLight, border: `1px solid ${colors.border}`, color: colors.text }} />
           <div className="flex items-center justify-between p-3 rounded-lg mb-4" style={{ background: colors.panelLight, border: `1px solid ${colors.border}` }}>
             <div className="text-sm" style={{ color: colors.text }}>Bloquear día completo</div>
-            <button onClick={() => onToggleDay(manageDate)} className="w-11 h-6 rounded-full relative" style={{ background: blockedDays.includes(manageDate) ? colors.danger : colors.border }}>
+            <button onClick={handleToggleDay} className="w-11 h-6 rounded-full relative" style={{ background: blockedDays.includes(manageDate) ? colors.danger : colors.border }}>
               <div className="absolute top-0.5 w-5 h-5 rounded-full bg-white" style={{ left: blockedDays.includes(manageDate) ? 22 : 2 }} />
             </button>
           </div>
@@ -465,7 +481,7 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
             {Array.from({ length: CLOSE_HOUR - OPEN_HOUR }, (_, i) => OPEN_HOUR + i).map((h) => {
               const blocked = (blockedHours[manageDate] || []).includes(h);
               return (
-                <button key={h} onClick={() => onToggleHour(manageDate, h)} className="py-2 rounded-lg text-xs flex items-center justify-center gap-1" style={{ background: blocked ? colors.accentSoft : colors.panelLight, border: `1px solid ${blocked ? colors.danger : colors.border}`, color: blocked ? colors.danger : colors.text, textDecoration: blocked ? "line-through" : "none" }}>{formatHour(h)}</button>
+               <button key={h} onClick={() => handleToggleHour(h)} className="py-2 rounded-lg text-xs flex items-center justify-center gap-1" style={{ background: blocked ? colors.accentSoft : colors.panelLight, border: `1px solid ${blocked ? colors.danger : colors.border}`, color: blocked ? colors.danger : colors.text, textDecoration: blocked ? "line-through" : "none" }}>{formatHour(h)}</button>
               );
             })}
           </div>
