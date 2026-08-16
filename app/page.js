@@ -356,63 +356,7 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
   const [extraNote, setExtraNote] = useState("");
 
   const active = bookings.filter((a) => a.status !== "cancelada");
-  const [reschedulingId, setReschedulingId] = useState(null);
-  const [rescheduleDate, setRescheduleDate] = useState(null);
-  const [rescheduleTime, setRescheduleTime] = useState(null);
-  const reschedulingBooking = active.find((a) => a.id === reschedulingId) || null;
-
-  const rescheduleHours = useMemo(() => {
-    if (!rescheduleDate || !reschedulingBooking) return [];
-    const hrsBlocked = blockedHours[rescheduleDate] || [];
-    const taken = active.filter((a) => a.date === rescheduleDate && a.id !== reschedulingBooking.id).map((a) => a.time);
-    const hrs = [];
-    for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) if (!hrsBlocked.includes(h) && !taken.includes(h)) hrs.push(h);
-    return hrs;
-  }, [rescheduleDate, blockedHours, active, reschedulingBooking]);
-
-  function startReschedule(booking) {
-    setReschedulingId(booking.id);
-    setRescheduleDate(booking.date);
-    setRescheduleTime(null);
-  }
-  function cancelReschedule() {
-    setReschedulingId(null);
-    setRescheduleDate(null);
-    setRescheduleTime(null);
-  }
-  async function confirmReschedule() {
-    const b = reschedulingBooking;
-    if (!b || !rescheduleDate || !rescheduleTime) return;
-    await onRescheduleBooking(b.id, rescheduleDate, rescheduleTime);
-    const msg = `Hola ${b.name}, tu cita en Barber Shop Caleb fue reprogramada. Nueva fecha: ${rescheduleDate} a las ${formatHour(rescheduleTime)}. ¡Te esperamos!`;
-    window.open(`https://wa.me/${b.phone.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`, "_blank");
-    cancelReschedule();
-  }
-
   function handleToggleDay() {
-    const isBlocking = !blockedDays.includes(manageDate);
-    if (isBlocking) {
-      const count = active.filter((a) => a.date === manageDate).length;
-      if (count > 0 && !window.confirm(`Hay ${count} cita(s) agendada(s) ese día. ¿Bloquear igual? (las citas existentes no se cancelan, repro grámalas luego desde la pestaña Citas)`)) return;
-    }
-    onToggleDay(manageDate);
-  }
-
-  function handleToggleHour(h) {
-    const isBlocking = !(blockedHours[manageDate] || []).includes(h);
-    if (isBlocking) {
-      const conflict = active.find((a) => a.date === manageDate && a.time === h);
-      if (conflict && !window.confirm(`Ya hay una cita a las ${formatHour(h)} (${conflict.name}). ¿Bloquear igual?`)) return;
-      onToggleHour(manageDate, h);
-      if (conflict && window.confirm(`¿Quieres reprogramar ahora la cita de ${conflict.name} a otro horario?`)) {
-        setTab("citas");
-        startReschedule(conflict);
-      }
-      return;
-    }
-    onToggleHour(manageDate, h);
-  }
-function handleToggleDay() {
     const isBlocking = !blockedDays.includes(manageDate);
     if (isBlocking) {
       const count = active.filter((a) => a.date === manageDate).length;
@@ -421,14 +365,18 @@ function handleToggleDay() {
     onToggleDay(manageDate);
   }
 
-  function handleToggleHour(h) {
-    const isBlocking = !(blockedHours[manageDate] || []).includes(h);
+ function handleToggleDay() {
+    const isBlocking = !blockedDays.includes(manageDate);
     if (isBlocking) {
-      const conflict = active.find((a) => a.date === manageDate && a.time === h);
-      if (conflict && !window.confirm(`Ya hay una cita a las ${formatHour(h)} (${conflict.name}). ¿Bloquear igual? (la cita existente no se cancela)`)) return;
+      const affected = active.filter((a) => a.date === manageDate);
+      if (affected.length > 0) {
+        if (!window.confirm(`Hay ${affected.length} cita(s) agendada(s) ese día. Si bloqueas, esas citas se CANCELARÁN automáticamente. ¿Continuar?`)) return;
+        affected.forEach((a) => onCancelBooking(a.id));
+      }
     }
-    onToggleHour(manageDate, h);
+    onToggleDay(manageDate);
   }
+  
   const revenue = useMemo(() => {
     const todayKey = crTodayKey();
     const happened = active.filter((a) => a.date <= todayKey);
