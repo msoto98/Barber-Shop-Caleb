@@ -474,7 +474,7 @@ function handleToggleDay() {
           <button key={k} onClick={() => setTab(k)} className="py-2 rounded-lg text-xs" style={{ background: tab === k ? colors.accent : "transparent", color: tab === k ? "#fff" : colors.muted, border: `1px solid ${tab === k ? colors.accent : colors.border}`, fontWeight: 600 }}>{label}</button>
         ))}
       </div>
-      {tab === "citas" && (
+      {{tab === "citas" && (
         <div className="space-y-3">
           <Card>
             <Calendar selected={citasDate} onSelect={setCitasDate} blockedDays={[]} restrictPast={false} />
@@ -493,11 +493,41 @@ function handleToggleDay() {
                 </div>
                 <div className="flex flex-col gap-1.5 items-end">
                   <span className="text-xs px-2 py-0.5 rounded-full" style={{ color: colors.success, border: `1px solid ${colors.success}` }}>Asistirá</span>
-                  <button onClick={() => { if (window.confirm(`¿Cancelar la cita de ${a.name}? Úsalo solo si te avisó personalmente que no va a llegar.`)) onCancelBooking(a.id); }} className="text-xs px-3 py-1 rounded-lg" style={{ background: "transparent", border: `1px solid ${colors.danger}`, color: colors.danger }}>Cancelar</button>
+                  <button onClick={() => startReschedule(a)} className="text-xs px-3 py-1 rounded-lg" style={{ background: "transparent", border: `1px solid ${colors.accent}`, color: colors.accent }}>Reprogramar</button>
+                  <button onClick={() => {
+                    if (window.confirm(`¿Cancelar la cita de ${a.name}? Úsalo solo si te avisó personalmente que no va a llegar.`)) {
+                      if (window.confirm("¿Prefieres reprogramarla a otro horario en vez de cancelarla del todo?")) {
+                        startReschedule(a);
+                      } else {
+                        onCancelBooking(a.id);
+                      }
+                    }
+                  }} className="text-xs px-3 py-1 rounded-lg" style={{ background: "transparent", border: `1px solid ${colors.danger}`, color: colors.danger }}>Cancelar</button>
                 </div>
               </div>
             </Card>
           ))}
+
+          {reschedulingBooking && (
+            <Card style={{ border: `1px solid ${colors.accent}` }}>
+              <div className="text-sm mb-3" style={{ color: colors.text, fontWeight: 600 }}>
+                Reprogramar cita de {reschedulingBooking.name}
+              </div>
+              <Calendar selected={rescheduleDate} onSelect={(d) => { setRescheduleDate(d); setRescheduleTime(null); }} blockedDays={blockedDays} />
+              {rescheduleDate && (
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  {rescheduleHours.map((h) => (
+                    <button key={h} onClick={() => setRescheduleTime(h)} className="py-2 rounded-lg text-xs" style={{ background: rescheduleTime === h ? colors.accent : colors.panelLight, border: `1px solid ${rescheduleTime === h ? colors.accent : colors.border}`, color: rescheduleTime === h ? "#fff" : colors.text }}>{formatHour(h)}</button>
+                  ))}
+                  {rescheduleHours.length === 0 && <div className="col-span-3 text-xs text-center py-2" style={{ color: colors.muted }}>No hay horas libres ese día.</div>}
+                </div>
+              )}
+              <div className="flex gap-2 mt-4">
+                <button onClick={cancelReschedule} className="flex-1 py-2.5 rounded-xl text-sm" style={{ background: colors.panelLight, border: `1px solid ${colors.border}`, color: colors.text }}>Cancelar</button>
+                <button disabled={!rescheduleDate || !rescheduleTime} onClick={confirmReschedule} className="flex-1 py-2.5 rounded-xl text-sm" style={{ background: !rescheduleDate || !rescheduleTime ? colors.border : colors.accent, color: "#fff", fontWeight: 600, opacity: !rescheduleDate || !rescheduleTime ? 0.5 : 1 }}>Confirmar nueva fecha</button>
+              </div>
+            </Card>
+          )}
         </div>
       )}
 
