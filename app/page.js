@@ -378,6 +378,17 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
     onToggleDay(manageDate);
   }
   
+  function handleToggleHour(h) {
+    const isBlocking = !(blockedHours[manageDate] || []).includes(h);
+    if (isBlocking) {
+      const conflict = active.find((a) => a.date === manageDate && a.time === h);
+      if (conflict) {
+        if (!window.confirm(`Ya hay una cita a las ${formatHour(h)} (${conflict.name}). Si bloqueas, esa cita se CANCELARÁ automáticamente. ¿Continuar?`)) return;
+        onCancelBooking(conflict.id);
+      }
+    }
+    onToggleHour(manageDate, h);
+  }
   const revenue = useMemo(() => {
     const todayKey = crTodayKey();
     const happened = active.filter((a) => a.date <= todayKey);
@@ -577,7 +588,7 @@ export default function App() {
       <div className="p-5 pb-16">
         {screen === "cliente" ? (
           <ClienteView bookings={bookings} blockedDays={blockedDays} blockedHours={blockedHours}
-            onCreateBooking={onCreateBooking} onCancelBooking={onCancelBooking} onGoAdmin={() => setScreen("admin")} heroImg="/hero.jpg" />
+                        onCreateBooking={onCreateBooking} onCancelBooking={onCancelBooking} onGoAdmin={() => setScreen("admin")} heroImages={HERO_IMAGES} />
         ) : (
           <AdminView bookings={bookings} blockedDays={blockedDays} blockedHours={blockedHours} extraIncome={extraIncome}
             onCancelBooking={onCancelBooking} onToggleDay={onToggleDay} onToggleHour={onToggleHour} onAddExtra={onAddExtra} onExit={() => setScreen("cliente")} />
