@@ -212,12 +212,12 @@ function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onC
   return (
     <div className="max-w-md mx-auto">
       {step === 1 && view === "reservar" ? (
-        <div className="relative rounded-2xl overflow-hidden mb-5" style={{ height: 190 }}>
+                <div className="relative rounded-2xl overflow-hidden mb-5" style={{ height: 230 }}>
                     {heroImages.map((src, i) => (
             <img key={src} src={src} alt="Barber Shop Caleb" className="w-full h-full object-cover absolute inset-0"
-              style={{ filter: "saturate(0.85) brightness(0.68)", opacity: i === heroIndex ? 1 : 0, transition: "opacity 1s ease" }} />
+                            style={{ filter: "saturate(0.85) brightness(0.68)", opacity: i === heroIndex ? 1 : 0, transition: "opacity 1s ease" }} />
           ))}
-          <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, rgba(10,15,26,0.15) 0%, ${colors.bg} 96%)` }} />
+                    <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, rgba(10,15,26,0) 45%, ${colors.bg} 96%)` }} />
           <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
             <Logo />
             <button onClick={onGoAdmin} className="p-2 rounded-lg" style={{ background: "rgba(10,15,26,0.55)", border: `1px solid ${colors.border}` }}>
