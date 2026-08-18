@@ -17,7 +17,7 @@ const SERVICES = [
   { id: "clasico", name: "Clásico", price: 4000, icon: Scissors, desc: "Corte tradicional a tijera y máquina" },
   { id: "corteybarba", name: "Corte + Barba", price: 6000, icon: User, desc: "Corte completo con arreglo de barba" },
 ];
-const HERO_IMAGES = ["/hero.jpg", "/gallery/2.jpg", "/gallery/3.jpg", "/gallery/4.jpg"];
+const HERO_IMAGES = ["/hero.jpg", "/2.jpg", "/3.jpg", "/4.jpg"];
 const DAYS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
