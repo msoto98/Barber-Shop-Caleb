@@ -362,14 +362,6 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
   const [extraNote, setExtraNote] = useState("");
 
   const active = bookings.filter((a) => a.status !== "cancelada");
-  function handleToggleDay() {
-    const isBlocking = !blockedDays.includes(manageDate);
-    if (isBlocking) {
-      const count = active.filter((a) => a.date === manageDate).length;
-      if (count > 0 && !window.confirm(`Hay ${count} cita(s) agendada(s) ese día. ¿Bloquear igual? (las citas existentes no se cancelan)`)) return;
-    }
-    onToggleDay(manageDate);
-  }
 
  function handleToggleDay() {
     const isBlocking = !blockedDays.includes(manageDate);
@@ -428,7 +420,7 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
           <button key={k} onClick={() => setTab(k)} className="py-2 rounded-lg text-xs" style={{ background: tab === k ? colors.accent : "transparent", color: tab === k ? "#fff" : colors.muted, border: `1px solid ${tab === k ? colors.accent : colors.border}`, fontWeight: 600 }}>{label}</button>
         ))}
       </div>
-      {{tab === "citas" && (
+      {tab === "citas" && (
         <div className="space-y-3">
           <Card>
             <Calendar selected={citasDate} onSelect={setCitasDate} blockedDays={[]} restrictPast={false} />
@@ -446,8 +438,7 @@ function AdminView({ bookings, blockedDays, blockedHours, extraIncome, onCancelB
                   <div className="text-xs flex items-center gap-1 mt-1" style={{ color: colors.muted }}><Phone size={10} /> {a.phone}</div>
                 </div>
                 <div className="flex flex-col gap-1.5 items-end">
-                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ color: colors.success, border: `1px solid ${colors.success}` }}>Asistirá</span>
-                  <button onClick={() => startReschedule(a)} className="text-xs px-3 py-1 rounded-lg" style={{ background: "transparent", border: `1px solid ${colors.accent}`, color: colors.accent }}>Reprogramar</button>
+                  <span className="text-xs px-2 py-0.5 rounded-full" style={{ color: colors.success, border: `1px solid ${colors.success}` }}>Asistirá</span
                   <button onClick={() => {
                     if (window.confirm(`¿Cancelar la cita de ${a.name}? Úsalo solo si te avisó personalmente que no va a llegar.`)) {
                       if (window.confirm("¿Prefieres reprogramarla a otro horario en vez de cancelarla del todo?")) {
