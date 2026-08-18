@@ -17,7 +17,7 @@ const SERVICES = [
   { id: "clasico", name: "Clásico", price: 4000, icon: Scissors, desc: "Corte tradicional a tijera y máquina" },
   { id: "corteybarba", name: "Corte + Barba", price: 6000, icon: User, desc: "Corte completo con arreglo de barba" },
 ];
-
+const HERO_IMAGES = ["/hero.jpg", "/gallery/2.jpg", "/gallery/3.jpg", "/gallery/4.jpg"];
 const DAYS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
@@ -138,7 +138,13 @@ function Calendar({ selected, onSelect, blockedDays, restrictPast = true }) {
     </div>
   );
 }
-function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onCancelBooking, onGoAdmin, heroImg }) {
+function ClienteView({ bookings, blockedDays, blockedHours, onCreateBooking, onCancelBooking, onGoAdmin, heroImages }) {
+  const [heroIndex, setHeroIndex] = useState(0);
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const t = setInterval(() => setHeroIndex((i) => (i + 1) % heroImages.length), 5000);
+    return () => clearInterval(t);
+  }, [heroImages.length]);
   const [step, setStep] = useState(1);
   const [service, setService] = useState(null);
   const [date, setDate] = useState(null);
